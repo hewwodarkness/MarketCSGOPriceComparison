@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Item List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #3e8e41;
+        }
+        button1 {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button1:hover {
+            background-color: #3e8e41;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 50px;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            
+            color: rgba(0,0,0,.87);
+            border-bottom-color: rgba(0,0,0,.42);
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: .009375em;
+            text-decoration: inherit;
+            text-transform: inherit;
+            align-self: flex-end;
+            box-sizing: border-box;
+            transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            border-bottom: 1px solid;
+            border-radius: 4px 4px 0 0;
+            background: rgb(245, 245, 245);
+            height: 32px;
+            :hover{
+                border-bottom-color: rgba(0,0,0,.87);
+                background: #ececec;
+            }
+            :focus{
+                border-color: #6200ee;
+            }
+                
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+    <h1>Список товарів</h1>
+    <div class="form-group">
+        <label for="rateInput">Мінімальний рейтинг:</label>
+        <input type="number" id="rateInput" class="form-control" value="2">
+    </div>
+    <div class="form-group">
+        <label for="volumeInput">Мінімальний обсяг:</label>
+        <input type="number" id="volumeInput" class="form-control" value="5">
+    </div>
+    <div class="form-group">
+        <label for="priceUahInput">Діапазон цін (грн):</label>
+        <input type="number" id="priceUahInput" class="form-control" value="600">
+        <input type="number" id="priceUahInputMax" class="form-control" value="1400">
+    </div>
+    <div class="form-group">
+        <label for="priceRubInput">Мінімальна ціна (руб):</label>
+        <input type="number" id="priceRubInput" class="form-control" value="0">
+    </div>
+    <button onclick="displayItems()">Пошук</button>
+    <button onclick="sortItems('rate')">Сортувати за рейтингом</button>
+    <button onclick="sortItems('volume')">Сортувати за обсягом</button>
+    <button onclick="sortItems('price')">Сортувати за ціною</button>
+    <table id="itemTable">
+        <thead>
+            <tr>
+                <th>Назва</th>
+                <th>Ціна</th>
+                <th>Ціна (руб)</th>
+                <th>Рейтинг</th>
+                <th>Обсяг на ТМ</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+<script>
+    var items = [];
+    var sortDirection = -1; // Default sort direction is descending
+    var sortField = 'rate'; // Default sort field is 'rate'
+
+    function displayItems() {
+        var rateValue = document.getElementById("rateInput").value;
+        var volumeValue = document.getElementById("volumeInput").value;
+        var priceUahValue = document.getElementById("priceUahInput").value;
+        var priceUahValueMax = document.getElementById("priceUahInputMax").value;
+        var priceRubValue = document.getElementById("priceRubInput").value;
+        eel.get_items(rateValue, volumeValue, priceUahValue, priceUahValueMax, priceRubValue)(function(result) {
+            items = result;
+            var tableBody = document.getElementById("itemTable").getElementsByTagName("tbody")[0];
+            tableBody.innerHTML = "";
+            for (var i = 0; i < items.length; i++) {
+                var row = tableBody.insertRow(i);
+                var nameCell = row.insertCell(0);
+                var priceCell = row.insertCell(1);
+                var rubPriceCell = row.insertCell(2);
+                var rateCell = row.insertCell(3);
+                var volumeCell = row.insertCell(4);
+                var buttonCell = row.insertCell(5);
+                var buttonCell1 = row.insertCell(6);
+                nameCell.innerHTML = items[i].name;
+                priceCell.innerHTML = items[i].price.toFixed(2);
+                rateCell.innerHTML = items[i].rate.toFixed(2);
+                volumeCell.innerHTML = items[i].tm_volume;
+                rubPriceCell.innerHTML = items[i].rubprice;
+
+                var button = document.createElement("button");
+                button.innerHTML = "TM";
+                button.addEventListener("click", createButtonClickListener(items[i].name));
+                buttonCell.appendChild(button);
+
+                var button1 = document.createElement("button1");
+                button1.innerHTML = "Steam";
+                button1.addEventListener("click", createButtonClickListener1(items[i].name));
+                buttonCell1.appendChild(button1);
+            }
+        });
+    }
+
+    function sortItems(field) {
+        if (sortField === field) {
+            sortDirection *= -1; // Invert the sort direction
+        } else {
+            sortField = field;
+            sortDirection = -1; // Default sort direction is descending
+        }
+        if (sortField === 'rate') {
+            items.sort(function(a, b) {
+                return sortDirection * (b.rate - a.rate);
+            });
+        } else if (sortField === 'volume') {
+            items.sort(function(a, b) {
+                return sortDirection * (b.tm_volume - a.tm_volume);
+            });
+        } else if (sortField === 'price') {
+            items.sort(function(a, b) {
+                return sortDirection * (a.price - b.price);
+            });
+        }
+        var tableBody = document.getElementById("itemTable").getElementsByTagName("tbody")[0];
+        tableBody.innerHTML = "";
+        for (var i = 0; i < items.length; i++) {
+            var row = tableBody.insertRow(i);
+            var nameCell = row.insertCell(0);
+            var priceCell = row.insertCell(1);
+            var rubPriceCell = row.insertCell(2);
+            var rateCell = row.insertCell(3);
+            var volumeCell = row.insertCell(4);
+            var buttonCell = row.insertCell(5);
+            var buttonCell1 = row.insertCell(6);
+            nameCell.innerHTML = items[i].name;
+            priceCell.innerHTML = items[i].price.toFixed(2);
+            rateCell.innerHTML = items[i].rate.toFixed(2);
+            volumeCell.innerHTML = items[i].tm_volume;
+            rubPriceCell.innerHTML = items[i].rubprice;
+            var button = document.createElement("button");
+                button.innerHTML = "TM";
+                button.addEventListener("click", createButtonClickListener(items[i].name));
+                buttonCell.appendChild(button);
+
+            var button1 = document.createElement("button1");
+                button1.innerHTML = "Steam";
+                button.addEventListener("click", createButtonClickListener1(items[i].name));
+                buttonCell1.appendChild(button1);
+        }
+    }
+
+    function createButtonClickListener(name) {
+        return function() {
+            var link1 = "https://market.csgo.com/uk/" + name;
+
+            window.open(link1, "_blank", "width=800,height=600");
+
+        };
+    }
+    function createButtonClickListener1(name) {
+        return function() {
+
+            var link2 = "https://steamcommunity.com/market/listings/730/" + name;
+
+            window.open(link2, "_blank", "width=800,height=600");
+        };
+    }
+</script>
+<script src="eel.js"></script>
+</body>
+</html>
